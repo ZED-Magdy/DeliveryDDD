@@ -30,6 +30,15 @@ class Client extends User
         return $order->addProduct($this, $name, $qty);
     }
 
+    public function publishOrder(Order $order)
+    {
+        if($this->getStatus() !== self::STATUS_ACTIVE || $this !== $order->getOwner())
+        {
+            throw new UnprocessableEntityHttpException("You dont have the permission to publish this order");
+        }
+        $order->markAsPublishedByClient($this);
+    }
+
     /**
      * @return Order[]
      */

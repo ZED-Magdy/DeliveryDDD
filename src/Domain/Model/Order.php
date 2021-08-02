@@ -20,6 +20,7 @@ class Order
     private Client $owner;
     private ?string $note;
     private int $status;
+    private \DateTimeImmutable $publishedAt;
     /**
      * @var Product[] $products
      */
@@ -44,6 +45,21 @@ class Order
         $product = new Product($name, $quantity, $this, $client);
         $this->products[] = $product;
         return $product;
+    }
+
+    public function markAsPublishedByClient(Client $client)
+    {
+        if($this->getOwner() !== $client)
+        {
+            throw new UnprocessableEntityHttpException("this client doesnt have the permission to publish this order");
+        }
+        if(count($this->getProducts()) < 1)
+        {
+            throw new UnprocessableEntityHttpException("Order must have at least 1 product to be published");
+        }
+
+        $this->status = self::STATUS_PENDING;
+        $this->publishedAt = new \DateTimeImmutable("now");
     }
 
     /**
