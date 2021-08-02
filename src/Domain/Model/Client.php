@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace App\Domain\Model;
 
 
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use App\Domain\Exception\AccountNotActivatedException;
+use App\Domain\Exception\CantAcceptMoreThanOneOfferPerOrderException;
+use App\Domain\Exception\InvalidEntityOwnerProvidedException;
+use App\Domain\Exception\OrderCantBePublished;
 
 class Client extends User
 {
@@ -18,6 +21,9 @@ class Client extends User
         return new Client($id, $email, $hashedPassword);
     }
 
+    /**
+     * @throws AccountNotActivatedException
+     */
     public function makeOrder(string $id, Place $orderPlace, Place $dropPlace, ?string $note): Order
     {
         $order = new Order($id, $orderPlace, $dropPlace, $this, $note);
@@ -30,13 +36,35 @@ class Client extends User
         return $order->addProduct($this, $name, $qty);
     }
 
+    /**
+     * @throws AccountNotActivatedException
+     * @throws OrderCantBePublished
+     * @throws InvalidEntityOwnerProvidedException
+     */
     public function publishOrder(Order $order)
     {
-        if($this->getStatus() !== self::STATUS_ACTIVE || $this !== $order->getOwner())
+        if($this->getStatus() !== self::STATUS_ACTIVE)
         {
-            throw new UnprocessableEntityHttpException("You dont have the permission to publish this order");
+            throw new AccountNotActivatedException();
         }
-        $order->markAsPublishedByClient($this);
+        if($this !== $order->getOwner())
+        {
+            throw new InvalidEntityOwnerProvidedException();
+        }
+        try {
+            $order->markAsPublishedByClient($this);
+        } catch (InvalidEntityOwnerProvidedException | OrderCantBePublished $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws InvalidEntityOwnerProvidedException
+     * @throws CantAcceptMoreThanOneOfferPerOrderException
+     */
+    public function acceptOffer(Offer $offer)
+    {
+        $offer->getOrder()->markAsProcessing($this, $offer);
     }
 
     /**

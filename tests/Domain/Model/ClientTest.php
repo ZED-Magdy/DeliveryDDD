@@ -2,6 +2,8 @@
 
 namespace App\Tests\Domain\Model;
 
+use App\Domain\Exception\AccountNotActivatedException;
+use App\Domain\Exception\InvalidEntityOwnerProvidedException;
 use App\Domain\Model\Client;
 use App\Domain\Model\Order;
 use App\Domain\Model\Place;
@@ -23,26 +25,32 @@ class ClientTest extends TestCase
     public function testClientCanCreateOrder()
     {
         $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
-        $order = $client->makeOrder(
-                                        Uuid::uuid4()->toString(),
-                                        new Place("McDonald","123.123","321.321","McDonald st"),
-                                        new Place("Home","321.321","123.123","Home st"),
-                                        ""
-                                    );
+        try {
+            $order = $client->makeOrder(
+                Uuid::uuid4()->toString(),
+                new Place("McDonald", "123.123", "321.321", "McDonald st"),
+                new Place("Home", "321.321", "123.123", "Home st"),
+                ""
+            );
+        } catch (AccountNotActivatedException $e) {
+        }
         $this->assertCount(1, $client->getOrders());
     }
 
     public function testClientCanAddProductToOrder()
     {
         $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
-        $order = $client->makeOrder(
-            Uuid::uuid4()->toString(),
-            new Place("McDonald","123.123","321.321","McDonald st"),
-            new Place("Home","321.321","123.123","Home st"),
-            ""
-        );
-        $client->addProductToOrder($order, "Cheese burger", "1");
-        $this->assertCount(1, $order->getProducts());
+        try {
+            $order = $client->makeOrder(
+                Uuid::uuid4()->toString(),
+                new Place("McDonald", "123.123", "321.321", "McDonald st"),
+                new Place("Home", "321.321", "123.123", "Home st"),
+                ""
+            );
+            $client->addProductToOrder($order, "Cheese burger", "1");
+            $this->assertCount(1, $order->getProducts());
+        } catch (AccountNotActivatedException $e) {
+        }
     }
 
     public function testClientsCantAddProductToOtherClientsOrder()
@@ -55,7 +63,7 @@ class ClientTest extends TestCase
             new Place("Home","321.321","123.123","Home st"),
             ""
         );
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidEntityOwnerProvidedException::class);
         $client2->addProductToOrder($order, "Cheese burger", "1");
         $this->assertCount(0, $order->getProducts());
     }
@@ -84,7 +92,7 @@ class ClientTest extends TestCase
             ""
         );
         $client->addProductToOrder($order, "Cheese burger", "1");
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(InvalidEntityOwnerProvidedException::class);
         $client2->publishOrder($order);
         $this->assertEquals(Order::STATUS_DRAFT, $order->getStatus());
     }

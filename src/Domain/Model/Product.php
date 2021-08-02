@@ -4,7 +4,8 @@
 namespace App\Domain\Model;
 
 
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use App\Domain\Exception\InvalidEntityOwnerProvidedException;
+use App\Domain\Exception\OrderCantBeUpdatedException;
 
 class Product
 {
@@ -12,15 +13,19 @@ class Product
     private string $quantity;
     private Order $order;
 
+    /**
+     * @throws OrderCantBeUpdatedException
+     * @throws InvalidEntityOwnerProvidedException
+     */
     public function __construct(string $name, string $quantity, Order $order, Client $client)
     {
         if($order->getStatus() !== Order::STATUS_DRAFT)
         {
-            throw new UnprocessableEntityHttpException("You cant add products to order after it has been published");
+            throw new OrderCantBeUpdatedException();
         }
         if($client !== $order->getOwner())
         {
-            throw new UnprocessableEntityHttpException("Only order owner can add products to the order");
+            throw new InvalidEntityOwnerProvidedException("Only order owner can add products to the order");
         }
         $this->name = $name;
         $this->quantity = $quantity;
