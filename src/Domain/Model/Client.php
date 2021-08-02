@@ -8,6 +8,8 @@ use App\Domain\Exception\AccountNotActivatedException;
 use App\Domain\Exception\CantAcceptMoreThanOneOfferPerOrderException;
 use App\Domain\Exception\InvalidEntityOwnerProvidedException;
 use App\Domain\Exception\OrderCantBePublished;
+use App\Domain\Exception\OrderCantBeUpdatedException;
+use Ramsey\Uuid\Uuid;
 
 class Client extends User
 {
@@ -16,9 +18,9 @@ class Client extends User
      */
     private array $orders;
 
-    public static function create(string $id, string $email, string $hashedPassword): Client
+    public static function create(string $email, string $hashedPassword): Client
     {
-        return new Client($id, $email, $hashedPassword);
+        return new Client(Uuid::uuid4()->toString(), $email, $hashedPassword);
     }
 
     /**
@@ -31,6 +33,10 @@ class Client extends User
         return $order;
     }
 
+    /**
+     * @throws InvalidEntityOwnerProvidedException
+     * @throws OrderCantBeUpdatedException
+     */
     public function addProductToOrder(Order $order, string $name, string $qty): Product
     {
         return $order->addProduct($this, $name, $qty);

@@ -17,14 +17,14 @@ class ClientTest extends TestCase
 
     public function testCreate()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
         $this->assertInstanceOf(Client::class, $client);
         $this->assertEquals(User::STATUS_ACTIVE, $client->getStatus());
     }
 
     public function testClientCanCreateOrder()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
         try {
             $order = $client->makeOrder(
                 Uuid::uuid4()->toString(),
@@ -39,7 +39,7 @@ class ClientTest extends TestCase
 
     public function testClientCanAddProductToOrder()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
         try {
             $order = $client->makeOrder(
                 Uuid::uuid4()->toString(),
@@ -55,8 +55,8 @@ class ClientTest extends TestCase
 
     public function testClientsCantAddProductToOtherClientsOrder()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
-        $client2 = Client::create(Uuid::uuid4()->toString(), "client2@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client2 = Client::create("client2@example.com", "ey$.sadasd123asd123");
         $order = $client->makeOrder(
             Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
@@ -70,7 +70,7 @@ class ClientTest extends TestCase
 
     public function testClientCanPublishOrder()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
         $order = $client->makeOrder(
             Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
@@ -83,8 +83,8 @@ class ClientTest extends TestCase
     }
     public function testClientsCantPublishOtherClientsOrder()
     {
-        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
-        $client2 = Client::create(Uuid::uuid4()->toString(), "client2@example.com", "ey$.sadasd123asd123");
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client2 = Client::create("client2@example.com", "ey$.sadasd123asd123");
         $order = $client->makeOrder(
             Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),

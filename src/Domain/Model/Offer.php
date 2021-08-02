@@ -7,24 +7,27 @@ namespace App\Domain\Model;
 use App\Domain\Exception\AccountNotActivatedException;
 use App\Domain\Exception\CantMakeOffersUntilDeliverOtherOrders;
 use App\Domain\Exception\InvalidActionForCurrentOrderState;
-use Decimal\Decimal;
+use App\Domain\Exception\InvalidEntityOwnerProvidedException;
 
 class Offer
 {
-    private Decimal $price;
+    private string $id;
+    private string $price;
     private Driver $driver;
     private Order $order;
+    private ?\DateTimeImmutable $acceptedAt;
 
     /**
      * Offer constructor.
+     * @param string $id
      * @param Driver $driver
      * @param Order $order
      * @param string $price
      * @throws AccountNotActivatedException
-     * @throws InvalidActionForCurrentOrderState
      * @throws CantMakeOffersUntilDeliverOtherOrders
+     * @throws InvalidActionForCurrentOrderState
      */
-    public function __construct(Driver $driver, Order $order, string $price)
+    public function __construct(string $id, Driver $driver, Order $order, string $price)
     {
         if($driver->getStatus() !== Driver::STATUS_ACTIVE)
         {
@@ -43,7 +46,21 @@ class Offer
         }
         $this->driver = $driver;
         $this->order = $order;
-        $this->price = new Decimal($price, 10);
+        $this->price = $price;
+        $this->id = $id;
+    }
+
+    /**
+     * @throws InvalidEntityOwnerProvidedException
+     */
+    public function markAsAccepted(Client $client)
+    {
+        if($client !== $this->getOrder()->getOwner())
+        {
+            throw new InvalidEntityOwnerProvidedException();
+        }
+        $this->acceptedAt = new \DateTimeImmutable('now');
+        $this->getDriver()->notifyOfferAccepted($this);
     }
 
     /**
@@ -51,7 +68,7 @@ class Offer
      */
     public function getPrice(): string
     {
-        return $this->price->toString();
+        return $this->price;
     }
 
     /**
@@ -68,5 +85,21 @@ class Offer
     public function getOrder(): Order
     {
         return $this->order;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getAcceptedAt(): ?\DateTimeImmutable
+    {
+        return $this->acceptedAt;
     }
 }

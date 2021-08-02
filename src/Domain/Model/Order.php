@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace App\Domain\Model;
 
 
+use App\Domain\Event\DomainEventPublisher;
+use App\Domain\Event\OfferWasAccepted;
+use App\Domain\Event\OrderWasPlaced;
 use App\Domain\Exception\AccountNotActivatedException;
 use App\Domain\Exception\CantAcceptMoreThanOneOfferPerOrderException;
 use App\Domain\Exception\InvalidActionForCurrentOrderState;
@@ -27,7 +30,7 @@ class Order
     private Place $dropPlace;
     private Client $owner;
     private ?Driver $driver;
-    private ?Decimal $price;
+    private ?string $price;
     private ?Offer $acceptedOffer;
     private ?string $note;
     private int $status;
@@ -58,7 +61,7 @@ class Order
     }
 
     /**
-     * @throws OrderCantBeUpdatedException
+     * @throws OrderCantBeUpdatedException|InvalidEntityOwnerProvidedException
      */
     public function addProduct(Client $client, string $name, string $quantity): Product
     {
@@ -84,6 +87,7 @@ class Order
 
         $this->status = self::STATUS_PENDING;
         $this->publishedAt = new DateTimeImmutable("now");
+        DomainEventPublisher::getInstance()->dispatch(new OrderWasPlaced($this->getId()));
     }
 
     /**
@@ -105,6 +109,7 @@ class Order
         $this->acceptedOffer = $offer;
         $this->offerAcceptedAt = new DateTimeImmutable('now');
         $this->status = self::STATUS_PROCESSING;
+        DomainEventPublisher::getInstance()->dispatch(new OfferWasAccepted($offer->getId()));
     }
 
     /**
@@ -231,15 +236,15 @@ class Order
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getPrice(): float
+    public function getPrice(): string
     {
-        return $this->price->toFloat();
+        return $this->price;
     }
     private function setPrice(string $price)
     {
-        $this->price = new Decimal($price, 10);
+        $this->price = $price;
     }
     /**
      * @return Offer|null
