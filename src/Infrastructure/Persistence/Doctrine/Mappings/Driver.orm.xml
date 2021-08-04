@@ -1,0 +1,10 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Domain\Model\Driver" repository-class="App\Infrastructure\Persistence\Doctrine\Repository\DriverRepository">
+        <field name="fees" nullable="true"/>
+        <one-to-many field="offers" target-entity="App\Domain\Model\Offer" mapped-by="driver"/>
+        <one-to-many field="orders" target-entity="App\Domain\Model\Order" mapped-by="driver"/>
+    </entity>
+</doctrine-mapping>

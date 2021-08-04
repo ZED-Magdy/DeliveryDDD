@@ -4,7 +4,7 @@
 namespace App\Domain\Exception;
 
 
-class CantMakeOffersUntilDeliverOtherOrders extends \Exception
+class CantMakeOffersUntilDeliverOtherOrders extends \Exception implements DomainExceptionInterface
 {
 
 }

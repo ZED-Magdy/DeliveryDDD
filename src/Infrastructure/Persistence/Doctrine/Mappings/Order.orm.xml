@@ -1,0 +1,29 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Domain\Model\Order" table="orders" repository-class="App\Infrastructure\Persistence\Doctrine\Repository\OrderRepository">
+        <id name="id" type="string" column="id">
+            <generator strategy="NONE" />
+        </id>
+        <field name="price" nullable="true"/>
+        <field name="status" type="smallint" />
+        <field name="note" nullable="true"/>
+        <field name="driverArrivedAt" type="date_immutable" nullable="true"/>
+        <field name="finishedAt" type="date_immutable" nullable="true"/>
+        <field name="offerAcceptedAt" type="date_immutable" nullable="true"/>
+        <field name="publishedAt" type="date_immutable" nullable="true"/>
+        <field name="orderPlace" type="place" />
+        <field name="dropPlace" type="place"/>
+        <many-to-one field="owner" target-entity="App\Domain\Model\Client" inversed-by="orders">
+            <join-column name="owner_id" referenced-column-name="id" on-delete="CASCADE"/>
+        </many-to-one>
+        <many-to-one field="driver" target-entity="App\Domain\Model\Driver" inversed-by="orders">
+            <join-column name="driver_id" referenced-column-name="id" nullable="true"/>
+        </many-to-one>
+        <one-to-one field="acceptedOffer" target-entity="App\Domain\Model\Offer">
+            <join-column name="accepted_offer_id" nullable="true" referenced-column-name="id"/>
+        </one-to-one>
+        <one-to-many field="products" target-entity="App\Domain\Model\Product" mapped-by="order"/>
+    </entity>
+</doctrine-mapping>

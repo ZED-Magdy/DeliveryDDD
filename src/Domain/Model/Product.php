@@ -6,9 +6,11 @@ namespace App\Domain\Model;
 
 use App\Domain\Exception\InvalidEntityOwnerProvidedException;
 use App\Domain\Exception\OrderCantBeUpdatedException;
+use Ramsey\Uuid\Uuid;
 
 class Product
 {
+    private string $id;
     private string $name;
     private string $quantity;
     private Order $order;
@@ -27,6 +29,7 @@ class Product
         {
             throw new InvalidEntityOwnerProvidedException("Only order owner can add products to the order");
         }
+        $this->id = Uuid::uuid4()->toString();
         $this->name = $name;
         $this->quantity = $quantity;
         $this->order = $order;

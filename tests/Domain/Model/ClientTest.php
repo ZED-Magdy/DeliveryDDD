@@ -10,7 +10,6 @@ use App\Domain\Model\Place;
 use App\Domain\Model\User;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ClientTest extends TestCase
 {
@@ -32,9 +31,9 @@ class ClientTest extends TestCase
                 new Place("Home", "321.321", "123.123", "Home st"),
                 ""
             );
+            $this->assertCount(1, $client->getOrders());
         } catch (AccountNotActivatedException $e) {
         }
-        $this->assertCount(1, $client->getOrders());
     }
 
     public function testClientCanAddProductToOrder()

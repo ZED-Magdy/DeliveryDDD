@@ -12,5 +12,5 @@ interface ClientRepositoryInterface
      * @param string $clientId
      * @return Client|null
      */
-    public function find(string $clientId): Client|null;
+    public function findClientById(string $clientId): Client|null;
 }

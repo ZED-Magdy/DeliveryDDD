@@ -31,5 +31,5 @@ interface OrderRepositoryInterface
      * @param string $orderId
      * @return Order|null
      */
-    public function find(string $orderId): Order|null;
+    public function findOrderById(string $orderId): Order|null;
 }

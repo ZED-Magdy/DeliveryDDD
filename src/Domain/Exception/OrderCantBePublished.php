@@ -4,7 +4,7 @@
 namespace App\Domain\Exception;
 
 
-class OrderCantBePublished extends \Exception
+class OrderCantBePublished extends \Exception implements DomainExceptionInterface
 {
 
 }

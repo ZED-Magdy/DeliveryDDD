@@ -4,7 +4,7 @@
 namespace App\Domain\Exception;
 
 
-class InvalidEntityOwnerProvidedException extends \Exception
+class InvalidEntityOwnerProvidedException extends \Exception implements DomainExceptionInterface
 {
 
 }

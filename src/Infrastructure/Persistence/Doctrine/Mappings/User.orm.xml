@@ -1,0 +1,19 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Domain\Model\User" table="users"
+            inheritance-type="SINGLE_TABLE">
+        <discriminator-column name="user_type"/>
+        <discriminator-map>
+            <discriminator-mapping value="client" class="App\Domain\Model\Client"/>
+            <discriminator-mapping value="driver" class="App\Domain\Model\Driver"/>
+        </discriminator-map>
+        <id name="id" type="string" column="id">
+            <generator strategy="NONE" />
+        </id>
+        <field name="email" unique="true"/>
+        <field name="password"/>
+        <field name="status" type="smallint"/>
+    </entity>
+</doctrine-mapping>

@@ -13,7 +13,7 @@ interface OfferRepositoryInterface
      * @param string $id
      * @return Offer|null
      */
-    public function find(string $id): Offer|null;
+    public function findOfferById(string $id): Offer|null;
 
     /**
      * @param string $orderId

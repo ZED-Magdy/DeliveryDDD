@@ -12,5 +12,5 @@ interface DriverRepositoryInterface
      * @param string $driverId
      * @return Driver|null
      */
-    public function find(string $driverId): Driver|null;
+    public function findDriverById(string $driverId): Driver|null;
 }

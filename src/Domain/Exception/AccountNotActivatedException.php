@@ -6,7 +6,7 @@ namespace App\Domain\Exception;
 
 use Throwable;
 
-class AccountNotActivatedException extends \Exception
+class AccountNotActivatedException extends \Exception implements DomainExceptionInterface
 {
     public function __construct()
     {
