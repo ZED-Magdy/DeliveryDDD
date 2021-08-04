@@ -41,7 +41,7 @@ class Order
     /**
      * @var Product[] $products
      */
-    private array $products;
+    private array $products = [];
 
     /**
      * @throws AccountNotActivatedException

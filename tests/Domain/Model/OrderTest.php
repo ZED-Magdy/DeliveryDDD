@@ -3,6 +3,7 @@
 namespace App\Tests\Domain\Model;
 
 use App\Domain\Exception\InvalidActionForCurrentOrderState;
+use App\Domain\Exception\OrderCantBePublished;
 use App\Domain\Model\Client;
 use App\Domain\Model\Driver;
 use App\Domain\Model\Order;
@@ -47,6 +48,23 @@ class OrderTest extends TestCase
         $this->assertEquals(Order::STATUS_PENDING, $order->getStatus());
         $this->assertNotNull($order->getPublishedAt());
     }
+
+    public function testClientCantPublishOrderWithNoProducts()
+    {
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $order = new Order(Uuid::uuid4()->toString(),
+            new Place("McDonald","123.123","321.321","McDonald st"),
+            new Place("Home","321.321","123.123","Home st"),
+            $client,"");
+
+        $this->expectException(OrderCantBePublished::class);
+
+        $order->markAsPublishedByClient($client);
+
+        $this->assertEquals(Order::STATUS_DRAFT, $order->getStatus());
+        $this->assertNull($order->getPublishedAt());
+    }
+
     public function testMarkAsProcessing()
     {
         $client = Client::create("client@example.com", "ey$.sadasd123asd123");
@@ -54,14 +72,26 @@ class OrderTest extends TestCase
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
-        $product = $order->addProduct($client, "new product", "5");
+        $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
         $driver = Driver::create("driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");
         $order->markAsProcessing($client, $offer);
         $this->assertEquals(Order::STATUS_PROCESSING, $order->getStatus());
         $this->assertNotNull($order->getOfferAcceptedAt());
+    }
 
+    public function testDriverCantMakeOfferOnOrderInDraftState()
+    {
+        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $order = new Order(Uuid::uuid4()->toString(),
+            new Place("McDonald","123.123","321.321","McDonald st"),
+            new Place("Home","321.321","123.123","Home st"),
+            $client,"");
+
+        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $this->expectException(InvalidActionForCurrentOrderState::class);
+        $driver->makeOffer($order, "55");
     }
 
     public function testMarkAsConnecting()
@@ -71,7 +101,7 @@ class OrderTest extends TestCase
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
-        $product = $order->addProduct($client, "new product", "5");
+        $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
         $driver = Driver::create("driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");

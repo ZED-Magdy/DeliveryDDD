@@ -10,6 +10,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class DomainEventPublisher
 {
     private static $instance;
+    private function __construct(){}
+    private function __clone(): void {}
 
     public static function getInstance(): EventDispatcherInterface
     {
