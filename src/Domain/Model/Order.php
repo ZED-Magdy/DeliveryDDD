@@ -15,6 +15,7 @@ use App\Domain\Exception\OrderCantBePublished;
 use App\Domain\Exception\OrderCantBeUpdatedException;
 use DateTimeImmutable;
 use Decimal\Decimal;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Order
 {
@@ -41,7 +42,7 @@ class Order
     /**
      * @var Product[] $products
      */
-    private array $products = [];
+    private $products;
 
     /**
      * @throws AccountNotActivatedException
@@ -58,6 +59,7 @@ class Order
         $this->owner = $owner;
         $this->note = $note;
         $this->status = self::STATUS_DRAFT;
+        $this->products = new ArrayCollection();
     }
 
     /**
@@ -236,11 +238,11 @@ class Order
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPrice(): string
+    public function getPrice(): ?string
     {
-        return $this->price;
+        return $this->price ?? null;
     }
     private function setPrice(string $price)
     {
@@ -259,7 +261,7 @@ class Order
      */
     public function getPublishedAt(): ?DateTimeImmutable
     {
-        return $this->publishedAt;
+        return $this->publishedAt ?? null;
     }
 
     /**
@@ -267,7 +269,7 @@ class Order
      */
     public function getOfferAcceptedAt(): ?DateTimeImmutable
     {
-        return $this->offerAcceptedAt;
+        return $this->offerAcceptedAt ?? null;
     }
 
     /**
@@ -275,7 +277,7 @@ class Order
      */
     public function getDriverArrivedAt(): ?DateTimeImmutable
     {
-        return $this->driverArrivedAt;
+        return $this->driverArrivedAt ?? null;
     }
 
     /**
@@ -283,6 +285,6 @@ class Order
      */
     public function getFinishedAt(): ?DateTimeImmutable
     {
-        return $this->finishedAt;
+        return $this->finishedAt ?? null;
     }
 }

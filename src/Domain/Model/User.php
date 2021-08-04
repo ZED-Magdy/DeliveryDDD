@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Domain\Model;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 abstract class User
 {
     public const STATUS_ACTIVE = 1;
@@ -20,6 +22,7 @@ abstract class User
         $this->email = $email;
         $this->password = $password;
         $this->status = self::STATUS_ACTIVE;
+        $this->orders = new ArrayCollection();
     }
 
     /**

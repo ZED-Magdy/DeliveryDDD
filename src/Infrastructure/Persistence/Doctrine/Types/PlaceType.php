@@ -15,7 +15,7 @@ class PlaceType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if ($value instanceof Place) {
-            $value = sprintf('PLACE(%S %S %S %S)',
+            $value = sprintf('PLACE(%s %s %s %s)',
                         $value->getName(), $value->getLongitude(),
                         $value->getLatitude(), $value->getAddress());
         }

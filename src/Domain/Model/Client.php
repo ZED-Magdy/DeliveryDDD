@@ -16,7 +16,7 @@ class Client extends User
     /**
      * @var Order[] $orders
      */
-    private array $orders;
+    private $orders;
 
     public static function create(string $email, string $hashedPassword): Client
     {
