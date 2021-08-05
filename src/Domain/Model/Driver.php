@@ -9,20 +9,27 @@ use App\Domain\Exception\AccountNotActivatedException;
 use App\Domain\Exception\CantMakeOffersUntilDeliverOtherOrders;
 use App\Domain\Exception\InvalidActionForCurrentOrderState;
 use App\Domain\Exception\InvalidEntityOwnerProvidedException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;
 
 class Driver extends User
 {
-    private array $offers = [];
+    /**
+     * @var Offer[] $offers
+     */
+    private $offers;
     /**
      * @var Order[] $orders
      */
-    private array $orders = [];
+    private $orders;
     private string $fees = "0.0";
 
     public static function create(string $email, string $hashedPassword): Driver
     {
-        return new Driver(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $driver = new Driver(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $driver->orders = new ArrayCollection();
+        $driver->offers = new ArrayCollection();
+        return $driver;
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Domain\Exception\CantAcceptMoreThanOneOfferPerOrderException;
 use App\Domain\Exception\InvalidEntityOwnerProvidedException;
 use App\Domain\Exception\OrderCantBePublished;
 use App\Domain\Exception\OrderCantBeUpdatedException;
+use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;
 
 class Client extends User
@@ -20,7 +21,9 @@ class Client extends User
 
     public static function create(string $email, string $hashedPassword): Client
     {
-        return new Client(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $client = new Client(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $client->orders = new ArrayCollection();
+        return $client;
     }
 
     /**

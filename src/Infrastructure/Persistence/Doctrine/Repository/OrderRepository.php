@@ -18,7 +18,7 @@ class OrderRepository extends ServiceEntityRepository implements OrderRepository
     /**
      * @inheritDoc
      */
-    public function findClientOrders(string $clientId, int $orderStatus): array
+    public function findClientOrders(string $clientId, int $orderStatus = Order::STATUS_DRAFT): array
     {
         $qb = $this->createQueryBuilder('o');
         return $qb

@@ -22,7 +22,6 @@ abstract class User
         $this->email = $email;
         $this->password = $password;
         $this->status = self::STATUS_ACTIVE;
-        $this->orders = new ArrayCollection();
     }
 
     /**

@@ -25,7 +25,7 @@ class PlaceType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        list($name, $longitude, $latitude, $address) = sscanf($value, 'POINT(%s %s %s %s)');
+        list($name, $longitude, $latitude, $address) = sscanf($value, 'PLACE(%s %s %s %s)');
 
         return new Place($name, $longitude, $latitude, $address);
     }

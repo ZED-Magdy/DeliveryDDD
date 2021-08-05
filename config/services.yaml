@@ -23,3 +23,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    app.application.custom_validator.unique_value_in_entity:
+        class: App\Application\CustomValidator\UniqueValueInEntityValidator
+        arguments: [ '@doctrine.orm.entity_manager' ]
+        tags:
+            - { name: validator.constraint_validator }

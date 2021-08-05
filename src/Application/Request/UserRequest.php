@@ -3,10 +3,12 @@
 
 namespace App\Application\Request;
 
-
-use Symfony\Component\HttpFoundation\Request;
+use App\Domain\Model\User;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Application\CustomValidator\UniqueValueInEntity;
 
+#[UniqueValueInEntity(field: "email", entityClass: User::class)]
 class UserRequest implements RequestDtoInterface
 {
     /**

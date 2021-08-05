@@ -12,12 +12,14 @@ use App\Domain\Exception\AccountNotActivatedException;
 use App\Domain\Model\Client;
 use App\Domain\Model\Place;
 use App\Domain\Repository\ClientRepositoryInterface;
+use App\Domain\Repository\OrderRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ClientsController extends AbstractController
 {
@@ -25,7 +27,9 @@ class ClientsController extends AbstractController
                                 private SerializerInterface $serializer,
                                 private EntityManagerInterface $em,
                                 private ClientRepositoryInterface $clientRepository,
-                                private OrderTransformer $orderTransformer
+                                private OrderRepositoryInterface $orderRepository,
+                                private OrderTransformer $orderTransformer,
+                                private ValidatorInterface $validator
     )
     {
     }
@@ -38,11 +42,16 @@ class ClientsController extends AbstractController
     public function registerAClient(UserRequest $request): JsonResponse
     {
         $client = Client::create($request->email(), $request->password());
-        $this->em->persist($client);
-        $this->em->flush();
-        $userResponse = $this->transformer->transform($client);
-        $response = $this->serializer->serialize($userResponse, 'json');
-        return new JsonResponse($response, json: true);
+        $errors = $this->validator->validate($request);
+        if($errors->count() == 0)
+        {
+            $this->em->persist($client);
+            $this->em->flush();
+            $userResponse = $this->transformer->transform($client);
+            $response = $this->serializer->serialize($userResponse, 'json');
+            return new JsonResponse($response, json: true);
+        }
+        return $this->json($errors, 400);
     }
 
     #[Route(path: '/clients/{id}/orders', name: 'clients.orders.create',methods: ["POST"])]
@@ -74,6 +83,14 @@ class ClientsController extends AbstractController
             return new JsonResponse($response, json: true);
         } catch (AccountNotActivatedException $e) {
         }
+    }
 
+    #[Route(path: '/client/{id}/orders', name: "client.orders.list" ,methods: ['GET'])]
+    public function getAllAvailableOrders(string $id)
+    {
+        $orders = $this->orderRepository->findClientOrders($id);
+        $ordersResponse = $this->orderTransformer->transform($orders);
+        $response = $this->serializer->serialize($ordersResponse, 'json');
+        return new JsonResponse($response, json: true);
     }
 }

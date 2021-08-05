@@ -4,21 +4,17 @@
 namespace App\Application\Request;
 
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Exception\ValidatorException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestDTOResolver implements ArgumentValueResolverInterface
 {
-    private ValidatorInterface $validator;
-
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
-
     /**
      * @inheritDoc
      * @throws \ReflectionException
@@ -62,12 +58,6 @@ class RequestDTOResolver implements ArgumentValueResolverInterface
             array_push($args, $arg);
         }
         $dto = $reflec->newInstanceArgs($args);
-
-        // throw bad request exception in case of invalid request data
-        $errors = $this->validator->validate($dto);
-        if (count($errors) > 0) {
-            throw new BadRequestHttpException((string) $errors);
-        }
 
         yield $dto;
     }
