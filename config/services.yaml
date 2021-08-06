@@ -31,7 +31,3 @@ services:
     App\Infrastructure\Security\UserAuthenticator:
         arguments:
             $userProvider: '@security.user.provider.concrete.infrastructure_security_provider'
-    app.domain.eventdispatcher:
-        class: App\Domain\Event\DomainEventPublisher
-        properties:
-            dispatcher: Symfony\Component\EventDispatcher\EventDispatcherInterface
