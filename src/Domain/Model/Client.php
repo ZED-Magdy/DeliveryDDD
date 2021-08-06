@@ -19,9 +19,9 @@ class Client extends User
      */
     private $orders;
 
-    public static function create(string $email, string $hashedPassword): Client
+    public static function create(string $id, string $email, string $hashedPassword): Client
     {
-        $client = new Client(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $client = new Client($id, $email, $hashedPassword);
         $client->orders = new ArrayCollection();
         return $client;
     }

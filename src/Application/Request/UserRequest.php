@@ -16,7 +16,8 @@ class UserRequest implements RequestDtoInterface
      */
     private ?string $email;
     /**
-     * @Assert\NotCompromisedPassword()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=6)
      */
     private ?string $password;
 

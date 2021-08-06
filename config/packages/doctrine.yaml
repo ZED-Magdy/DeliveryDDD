@@ -18,3 +18,9 @@ doctrine:
                 dir: "%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mappings"
                 prefix: 'App\Domain\Model'
                 alias: App
+            App\Infrastructure\Security:
+                is_bundle: false
+                type: xml
+                dir: "%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Security/Mappings"
+                prefix: 'App\Infrastructure\Security'
+                alias: App

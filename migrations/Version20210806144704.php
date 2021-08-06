@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210804153122 extends AbstractMigration
+final class Version20210806144704 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -34,6 +34,9 @@ final class Version20210804153122 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_E52FFDEEC3423909 ON orders (driver_id)');
         $this->addSql('CREATE TABLE products (id VARCHAR(255) NOT NULL, order_id VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, quantity VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_B3BA5A5A8D9F6D38 ON products (order_id)');
+        $this->addSql('CREATE TABLE security_users (id VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, roles CLOB NOT NULL --(DC2Type:json_array)
+        , PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_F83F4643E7927C74 ON security_users (email)');
         $this->addSql('CREATE TABLE users (id VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, status SMALLINT NOT NULL, user_type VARCHAR(255) NOT NULL, fees VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1483A5E9E7927C74 ON users (email)');
     }
@@ -44,6 +47,7 @@ final class Version20210804153122 extends AbstractMigration
         $this->addSql('DROP TABLE offers');
         $this->addSql('DROP TABLE orders');
         $this->addSql('DROP TABLE products');
+        $this->addSql('DROP TABLE security_users');
         $this->addSql('DROP TABLE users');
     }
 }

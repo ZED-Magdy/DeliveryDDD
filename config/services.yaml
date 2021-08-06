@@ -28,3 +28,6 @@ services:
         arguments: [ '@doctrine.orm.entity_manager' ]
         tags:
             - { name: validator.constraint_validator }
+    App\Infrastructure\Security\UserAuthenticator:
+        arguments:
+            $userProvider: '@security.user.provider.concrete.infrastructure_security_provider'
