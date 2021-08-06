@@ -32,7 +32,6 @@ class ClientsController extends AbstractController
                                 private OrderRepositoryInterface $orderRepository,
                                 private OrderTransformer $orderTransformer,
                                 private ValidatorInterface $validator,
-                                private UserPasswordHasherInterface $hasher
     )
     {
     }
@@ -47,14 +46,8 @@ class ClientsController extends AbstractController
         $errors = $this->validator->validate($request);
         if($errors->count() == 0)
         {
-            $id = Uuid::uuid4()->toString();
-            $client = Client::create($id, $request->email(), $request->password());
-            //TODO: Add Domain Events in the User Domain Model so when User Created/Updated
-            //The event will be fired and update the security user as well
-            $securityUser = new User(Uuid::uuid4()->toString(), $request->email(), ["ROLE_CLIENT"]);
-            $securityUser->setHashedPassword($this->hasher->hashPassword($securityUser, $request->password()));
+            $client = Client::create(Uuid::uuid4()->toString(), $request->email(), $request->password());
             $this->em->persist($client);
-            $this->em->persist($securityUser);
             $this->em->flush();
             $userResponse = $this->transformer->transform($client);
             $response = $this->serializer->serialize($userResponse, 'json');

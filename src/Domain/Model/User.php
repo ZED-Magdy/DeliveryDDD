@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace App\Domain\Model;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Domain\Event\DomainEventPublisher;
+use App\Domain\Event\UserWasCreated;
 
 abstract class User
 {
@@ -22,6 +23,7 @@ abstract class User
         $this->email = $email;
         $this->password = $password;
         $this->status = self::STATUS_ACTIVE;
+        DomainEventPublisher::instance()->publish(new UserWasCreated($id, $email, $password, get_called_class()));
     }
 
     /**
