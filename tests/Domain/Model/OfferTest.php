@@ -14,8 +14,8 @@ class OfferTest extends TestCase
 
     public function testCreate()
     {
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
-        $client = Client::create("client@example.com", "ey$.aasdadad1223");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.aasdadad1223");
         $order = $client->makeOrder(Uuid::uuid4()->toString(), new Place("McDonald", "1231", "1231", "street"),
             new Place("Home", "123131", "12313212", "home"), null);
         $client->addProductToOrder($order, "Big Mac", "2");
@@ -26,8 +26,8 @@ class OfferTest extends TestCase
 
     public function testMarkAsAccepted()
     {
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
-        $client = Client::create("client@example.com", "ey$.aasdadad1223");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.aasdadad1223");
         $order = $client->makeOrder(Uuid::uuid4()->toString(), new Place("McDonald", "1231", "1231", "street"),
             new Place("Home", "123131", "12313212", "home"), null);
         $client->addProductToOrder($order, "Big Mac", "2");

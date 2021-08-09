@@ -89,7 +89,7 @@ class Order
 
         $this->status = self::STATUS_PENDING;
         $this->publishedAt = new DateTimeImmutable("now");
-        DomainEventPublisher::getInstance()->dispatch(new OrderWasPlaced($this->getId()));
+        //DomainEventPublisher::instance()->publish(new OrderWasPlaced($this->getId()));
     }
 
     /**
@@ -111,7 +111,7 @@ class Order
         $this->acceptedOffer = $offer;
         $this->offerAcceptedAt = new DateTimeImmutable('now');
         $this->status = self::STATUS_PROCESSING;
-        DomainEventPublisher::getInstance()->dispatch(new OfferWasAccepted($offer->getId()));
+        //DomainEventPublisher::instance()->publish(new OfferWasAccepted($offer->getId()));
     }
 
     /**
@@ -222,9 +222,9 @@ class Order
     }
 
     /**
-     * @return Product[]
+     * @return ArrayCollection
      */
-    public function getProducts(): array
+    public function getProducts(): ArrayCollection
     {
         return $this->products;
     }

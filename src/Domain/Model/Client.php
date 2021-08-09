@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 class Client extends User
 {
     /**
-     * @var Order[] $orders
+     * @var Order[]|ArrayCollection $orders
      */
     private $orders;
 
@@ -77,9 +77,9 @@ class Client extends User
     }
 
     /**
-     * @return Order[]
+     * @return ArrayCollection
      */
-    public function getOrders(): array
+    public function getOrders(): ArrayCollection
     {
         return $this->orders;
     }

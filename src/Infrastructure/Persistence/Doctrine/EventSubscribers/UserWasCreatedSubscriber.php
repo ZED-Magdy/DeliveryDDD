@@ -33,7 +33,7 @@ class UserWasCreatedSubscriber implements DomainEventSubscriber
         $securityUser = new User(Uuid::uuid4()->toString(), $event->getEmail(), $role);
         $securityUser->setHashedPassword($this->hasher->hashPassword($securityUser, $event->getPassword()));
         $this->em->persist($securityUser);
-        $this->em->flush();
+
     }
 
     public function isSubscribedTo(DomainEvent $aDomainEvent): bool

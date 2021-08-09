@@ -14,19 +14,13 @@ use Ramsey\Uuid\Uuid;
 
 class Driver extends User
 {
-    /**
-     * @var Offer[] $offers
-     */
     private $offers;
-    /**
-     * @var Order[] $orders
-     */
     private $orders;
     private string $fees = "0.0";
 
-    public static function create(string $email, string $hashedPassword): Driver
+    public static function create(string $id, string $email, string $hashedPassword): Driver
     {
-        $driver = new Driver(Uuid::uuid4()->toString(), $email, $hashedPassword);
+        $driver = new Driver($id, $email, $hashedPassword);
         $driver->orders = new ArrayCollection();
         $driver->offers = new ArrayCollection();
         return $driver;
@@ -80,7 +74,7 @@ class Driver extends User
             throw new InvalidEntityOwnerProvidedException();
         }
         $this->orders[] = $offer->getOrder();
-        DomainEventPublisher::getInstance()->dispatch(new OfferWasAccepted($offer->getId()));
+        //DomainEventPublisher::getInstance()->dispatch(new OfferWasAccepted($offer->getId()));
     }
 
     /**
@@ -103,9 +97,9 @@ class Driver extends User
     }
 
     /**
-     * @return Order[]
+     * @return ArrayCollection
      */
-    public function getOrders(): array
+    public function getOrders(): ArrayCollection
     {
         return $this->orders;
     }
@@ -115,7 +109,7 @@ class Driver extends User
         return $this->fees;
     }
 
-    public function getOffers(): array
+    public function getOffers(): ArrayCollection
     {
         return $this->offers;
     }

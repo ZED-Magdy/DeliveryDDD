@@ -16,12 +16,15 @@ use App\Domain\Repository\OrderRepositoryInterface;
 use App\Infrastructure\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 class ClientsController extends AbstractController
 {
@@ -32,6 +35,7 @@ class ClientsController extends AbstractController
                                 private OrderRepositoryInterface $orderRepository,
                                 private OrderTransformer $orderTransformer,
                                 private ValidatorInterface $validator,
+                                private Security $security
     )
     {
     }
@@ -56,11 +60,20 @@ class ClientsController extends AbstractController
         return $this->json($errors, 400);
     }
 
+    /**
+     * @param OrderRequest $request
+     * @param string $id
+     * @return JsonResponse
+     * @IsGranted("ROLE_CLIENT")
+     */
     #[Route(path: '/clients/{id}/orders', name: 'clients.orders.create',methods: ["POST"])]
     public function makeOrder(OrderRequest $request, string $id): JsonResponse
     {
-        //Imagine we get the Authenticated Client not fetching it from db
-        $client = $this->clientRepository->findClientById($id);
+        if($this->security->getUser()->getId() != $id)
+        {
+            return $this->json(['error' => 'forbidden'], 403);
+        }
+        $client = $this->clientRepository->findClientById($this->security->getUser()->getId());
         try {
             $order = $client->makeOrder(Uuid::uuid4()->toString(),
                 new Place(
@@ -87,9 +100,18 @@ class ClientsController extends AbstractController
         }
     }
 
+    /**
+     * @param string $id
+     * @return JsonResponse
+     */
+    #[IsGranted(data: "ROLE_CLIENT", message: "Only clients can list their orders", statusCode: 403)]
     #[Route(path: '/client/{id}/orders', name: "client.orders.list" ,methods: ['GET'])]
     public function getAllAvailableOrders(string $id)
     {
+        if($this->security->getUser()->getId() != $id)
+        {
+            return $this->json(['error' => 'forbidden'], 403);
+        }
         $orders = $this->orderRepository->findClientOrders($id);
         $ordersResponse = $this->orderTransformer->transform($orders);
         $response = $this->serializer->serialize($ordersResponse, 'json');

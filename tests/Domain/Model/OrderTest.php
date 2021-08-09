@@ -16,7 +16,7 @@ class OrderTest extends TestCase
 {
     public function testCreate()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
@@ -25,7 +25,7 @@ class OrderTest extends TestCase
     }
     public function testAddProduct()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
@@ -37,7 +37,7 @@ class OrderTest extends TestCase
 
     public function testMarkAsPublishedByClient()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
@@ -51,7 +51,7 @@ class OrderTest extends TestCase
 
     public function testClientCantPublishOrderWithNoProducts()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
@@ -67,14 +67,14 @@ class OrderTest extends TestCase
 
     public function testMarkAsProcessing()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
         $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");
         $order->markAsProcessing($client, $offer);
         $this->assertEquals(Order::STATUS_PROCESSING, $order->getStatus());
@@ -83,27 +83,27 @@ class OrderTest extends TestCase
 
     public function testDriverCantMakeOfferOnOrderInDraftState()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
 
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
         $this->expectException(InvalidActionForCurrentOrderState::class);
         $driver->makeOffer($order, "55");
     }
 
     public function testMarkAsConnecting()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
         $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");
         $order->markAsProcessing($client, $offer);
         $order->markAsConnecting($driver);
@@ -113,14 +113,14 @@ class OrderTest extends TestCase
 
     public function testMarkAsDelivered()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
         $product = $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");
         $order->markAsProcessing($client, $offer);
         $order->markAsConnecting($driver);
@@ -131,14 +131,14 @@ class OrderTest extends TestCase
 
     public function testMarkAsFailed()
     {
-        $client = Client::create("client@example.com", "ey$.sadasd123asd123");
+        $client = Client::create(Uuid::uuid4()->toString(), "client@example.com", "ey$.sadasd123asd123");
         $order = new Order(Uuid::uuid4()->toString(),
             new Place("McDonald","123.123","321.321","McDonald st"),
             new Place("Home","321.321","123.123","Home st"),
             $client,"");
         $product = $order->addProduct($client, "new product", "5");
         $order->markAsPublishedByClient($client);
-        $driver = Driver::create("driver@example.com", "ey$.2312313");
+        $driver = Driver::create(Uuid::uuid4()->toString(), "driver@example.com", "ey$.2312313");
         $offer = $driver->makeOffer($order, "55");
         $order->markAsProcessing($client, $offer);
         $order->markAsConnecting($driver);
