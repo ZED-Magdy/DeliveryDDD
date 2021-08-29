@@ -13,6 +13,7 @@ use App\Domain\Model\Client;
 use App\Domain\Model\Place;
 use App\Domain\Repository\ClientRepositoryInterface;
 use App\Domain\Repository\OrderRepositoryInterface;
+use App\Infrastructure\Security\AuthServiceInterface;
 use App\Infrastructure\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
@@ -30,12 +31,11 @@ class ClientsController extends AbstractController
 {
     public function __construct(private UserTransformer $transformer,
                                 private SerializerInterface $serializer,
-                                private EntityManagerInterface $em,
-                                private ClientRepositoryInterface $clientRepository,
                                 private OrderRepositoryInterface $orderRepository,
+                                private ClientRepositoryInterface $clientRepository,
                                 private OrderTransformer $orderTransformer,
                                 private ValidatorInterface $validator,
-                                private Security $security
+                                private AuthServiceInterface $auth
     )
     {
     }
@@ -51,8 +51,8 @@ class ClientsController extends AbstractController
         if($errors->count() == 0)
         {
             $client = Client::create(Uuid::uuid4()->toString(), $request->email(), $request->password());
-            $this->em->persist($client);
-            $this->em->flush();
+            $this->clientRepository->add($client);
+            $this->clientRepository->saveChanges();
             $userResponse = $this->transformer->transform($client);
             $response = $this->serializer->serialize($userResponse, 'json');
             return new JsonResponse($response, json: true);
@@ -69,13 +69,12 @@ class ClientsController extends AbstractController
     #[Route(path: '/clients/{id}/orders', name: 'clients.orders.create',methods: ["POST"])]
     public function makeOrder(OrderRequest $request, string $id): JsonResponse
     {
-        if($this->security->getUser()->getId() != $id)
+        if($this->auth->getAuthUser()->getId() != $id || !$this->auth->getAuthUser() instanceof Client)
         {
             return $this->json(['error' => 'forbidden'], 403);
         }
-        $client = $this->clientRepository->findClientById($this->security->getUser()->getId());
         try {
-            $order = $client->makeOrder(Uuid::uuid4()->toString(),
+            $order = $this->auth->getAuthUser()->makeOrder(Uuid::uuid4()->toString(),
                 new Place(
                     $request->orderPlace()->name(),
                     $request->orderPlace()->longitude(),
@@ -91,8 +90,8 @@ class ClientsController extends AbstractController
                 $request->note()
             );
 
-            $this->em->persist($order);
-            $this->em->flush();
+            $this->orderRepository->add($order);
+            $this->orderRepository->saveChanges();
             $orderResponse = $this->orderTransformer->transform($order);
             $response = $this->serializer->serialize($orderResponse, 'json');
             return new JsonResponse($response, json: true);
@@ -108,7 +107,7 @@ class ClientsController extends AbstractController
     #[Route(path: '/client/{id}/orders', name: "client.orders.list" ,methods: ['GET'])]
     public function getAllAvailableOrders(string $id)
     {
-        if($this->security->getUser()->getId() != $id)
+        if($this->auth->getAuthUser()->getId() != $id)
         {
             return $this->json(['error' => 'forbidden'], 403);
         }

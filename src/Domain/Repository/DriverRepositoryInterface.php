@@ -6,7 +6,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\Driver;
 
-interface DriverRepositoryInterface
+interface DriverRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param string $driverId

@@ -7,6 +7,8 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 use App\Domain\Model\Order;
 use App\Domain\Repository\OrderRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class OrderRepository extends ServiceEntityRepository implements OrderRepositoryInterface
@@ -70,5 +72,18 @@ class OrderRepository extends ServiceEntityRepository implements OrderRepository
     public function findOrderById(string $orderId): Order|null
     {
         return parent::find($orderId);
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function saveChanges(): void
+    {
+        $this->_em->flush();
+    }
+    public function add($entity): void
+    {
+        $this->_em->persist($entity);
     }
 }

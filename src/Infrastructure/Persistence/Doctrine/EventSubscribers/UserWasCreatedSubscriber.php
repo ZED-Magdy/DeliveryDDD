@@ -30,7 +30,7 @@ class UserWasCreatedSubscriber implements DomainEventSubscriber
         if($event->getUserType() instanceof Driver){
             $role = ["ROLE_DRIVER"];
         }
-        $securityUser = new User(Uuid::uuid4()->toString(), $event->getEmail(), $role);
+        $securityUser = new User($event->getId(), $event->getEmail(), $role);
         $securityUser->setHashedPassword($this->hasher->hashPassword($securityUser, $event->getPassword()));
         $this->em->persist($securityUser);
 

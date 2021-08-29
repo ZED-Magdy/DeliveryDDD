@@ -5,6 +5,8 @@ namespace App\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Domain\Model\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use function Doctrine\ORM\QueryBuilder;
 
@@ -34,5 +36,18 @@ class OfferRepository extends ServiceEntityRepository implements \App\Domain\Rep
             ->setParameter('order', $orderId)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function saveChanges(): void
+    {
+        $this->_em->flush();
+    }
+    public function add($entity): void
+    {
+        $this->_em->persist($entity);
     }
 }

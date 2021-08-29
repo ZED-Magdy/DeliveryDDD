@@ -6,7 +6,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\Order;
 
-interface OrderRepositoryInterface
+interface OrderRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param string $clientId

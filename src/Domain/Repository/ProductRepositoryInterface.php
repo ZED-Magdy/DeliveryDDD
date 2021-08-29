@@ -6,11 +6,11 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\Product;
 
-interface ProductRepositoryInterface
+interface ProductRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param string $orderId
-     * @return Product[]|array
+     * @return Product[]
      */
     public function findOrderProducts(string $orderId): array;
 }

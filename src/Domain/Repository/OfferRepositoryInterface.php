@@ -7,7 +7,7 @@ namespace App\Domain\Repository;
 use App\Domain\Model\Offer;
 use App\Domain\Model\User;
 
-interface OfferRepositoryInterface
+interface OfferRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param string $id

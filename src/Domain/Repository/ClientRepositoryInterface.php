@@ -6,7 +6,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\Client;
 
-interface ClientRepositoryInterface
+interface ClientRepositoryInterface extends RepositoryInterface
 {
     /**
      * @param string $clientId
